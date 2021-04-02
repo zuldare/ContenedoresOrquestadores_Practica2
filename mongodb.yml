@@ -1,0 +1,56 @@
+# Deployments
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+spec:
+  #replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  # strategy:
+  #   type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - env:
+            - name: MONGO_INITDB_DATABASE
+              value: topoDB
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: password
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: root
+          image: mongo:4.2.12-bionic
+          name: mongodb
+          ports:
+            - containerPort: 27017
+#             - containerPort: 27018
+#             - containerPort: 27019
+#       restartPolicy: Always
+---
+# service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels:
+    app: mongodb  
+spec:
+  ports:
+    - name: "27017"
+      port: 27017
+      targetPort: 27017
+    # - name: "27018"
+    #   port: 27018
+    #   targetPort: 27018
+    # - name: "27019"
+    #   port: 27019
+    #   targetPort: 27019
+  selector:
+    app: mongodb
+  type: LoadBalancer
+# status:
+#   loadBalancer: {}
